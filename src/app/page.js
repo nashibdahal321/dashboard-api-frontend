@@ -12,9 +12,37 @@ import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
-
+import NextLink from 'next/link'
+import { useRouter } from 'next/navigation';
 
 export default function Login () {
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const { push } = useRouter();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    fetch(process.env.BACKEND_URL + "dashboard/login/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({
+        username: username,
+        password: password
+      })
+    })
+      .then(res => res.json()).then(res => {
+        if (res.success) {
+          push("/dashboard");
+        } else {
+          setErrorMessage("Incorrect Credentials")
+        }
+        console.log("success", res);
+      }).catch(res => {
+        setErrorMessage("Could not login")
+      })
+  }
+
   return (
     <Container component="main" maxWidth="xs" style={{
       marginTop: "10vh"
@@ -30,7 +58,8 @@ export default function Login () {
           <LockOutlinedIcon />
         </Avatar> */}
 
-        <form style={{form: {
+        <form onSubmit={handleSubmit}
+          style={{form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: "8px"
   }}} noValidate>
@@ -43,6 +72,7 @@ export default function Login () {
                 id="username"
                 label="Username"
                 name="username"
+                onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
               />
             </Grid>
@@ -55,6 +85,7 @@ export default function Login () {
                 label="Password"
                 type="password"
                 id="password"
+                onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
               />
             </Grid>
@@ -66,14 +97,16 @@ export default function Login () {
                 marginTop: "30px",
                 marginBottom: "10px"
               }}>
-                <Button
-                type="submit"
-                fullWidth
-                variant="outlined"
-                color="primary"
-              >
-                Create Account
-              </Button>
+                 <NextLink href="/signup/" style={{width: "100%"}}>
+                  <Button
+                  type="submit"
+                  fullWidth
+                  variant="outlined"
+                  color="primary"
+                >
+                 Create Account
+                  
+                </Button></NextLink>
               <Button
                 type="submit"
                 fullWidth
@@ -83,21 +116,20 @@ export default function Login () {
                 Login
               </Button>
               </div>
-
-              
-
             </Grid>
-
-            
           </Grid>
-          
 
-          
-          <Grid container justify="flex-end">
+          <Grid container justify="flex-end" style={{
+            flexDirection: "column",
+            gap: "10px"
+          }}>
             <Grid item>
               <Link href="#" variant="body2">
                 Forgot Password
               </Link>
+            </Grid>
+            <Grid item>
+              <p style={{color:"red"}}>{errorMessage}</p>
             </Grid>
           </Grid>
         </form>

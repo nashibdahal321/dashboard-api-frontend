@@ -100,6 +100,11 @@ a {
   text-decoration: none;
 }
 
+.MuiDrawer-paperAnchorDockedLeft {
+  border-right-color: #65bcf2;
+  border-right-width: 5px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
